@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
  * @author jona
  */
 @Log4j2
-public class TestInsertEstadoAmistad1 {
+public class TestInsertEstadoAmistad {
 
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
