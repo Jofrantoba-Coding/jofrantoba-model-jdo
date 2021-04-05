@@ -41,7 +41,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
             pm = pmf.getPersistenceManager();
             tx = pm.currentTransaction();
             tx.begin();            
-            pm.makePersistent(entity);
+            pm.makePersistent(entity);            
         } catch (Exception ex) {
             rollback(pm, tx);
             throw throwsException(ex, false);

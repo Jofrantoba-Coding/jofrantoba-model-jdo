@@ -39,10 +39,9 @@ public class TestEstadoAmistad {
     @Test
     void createEntity1() throws UnknownException {        
         EstadoAmistad entity = new EstadoAmistad();        
-        entity.setIdEstadoAmistad("A");
-        entity.setCodeEstadoAmistad("A");
-        entity.setDescripcion("ACT");
-        entity.setIsPersistente(Boolean.FALSE);  
+        entity.setIdEstadoAmistad("A");        
+        entity.setDescripcion("ACTIVO");        
+        entity.setIsPersistente(Boolean.TRUE);
         entity.setVersion(1L);        
         DaoEstadoAmistad dao = new DaoEstadoAmistad();
         dao.saveOrUpdate(entity);
@@ -51,11 +50,10 @@ public class TestEstadoAmistad {
     @Test
     void createEntity2() throws UnknownException {        
         EstadoAmistad entity = new EstadoAmistad();        
-        entity.setIdEstadoAmistad("E");
-        entity.setCodeEstadoAmistad("E");
-        entity.setDescripcion("ELIMINADO");
-        entity.setIsPersistente(Boolean.FALSE);  
+        entity.setIdEstadoAmistad("E");        
+        entity.setDescripcion("ELIMINADO");        
         entity.setVersion(1L);        
+        entity.setIsPersistente(Boolean.TRUE);
         DaoEstadoAmistad dao = new DaoEstadoAmistad();
         dao.saveOrUpdate(entity);
     }
@@ -63,12 +61,54 @@ public class TestEstadoAmistad {
     @Test
     void createEntity3() throws UnknownException {        
         EstadoAmistad entity = new EstadoAmistad();        
-        entity.setIdEstadoAmistad("B");
-        entity.setCodeEstadoAmistad("B");
-        entity.setDescripcion("BLOQUEADO");
-        entity.setIsPersistente(Boolean.TRUE);  
+        entity.setIdEstadoAmistad("B");        
+        entity.setDescripcion("BLOQUEADO");   
+        entity.setIsPersistente(Boolean.TRUE);
         entity.setVersion(1L);        
         DaoEstadoAmistad dao = new DaoEstadoAmistad();
         dao.saveOrUpdate(entity);
+    }
+    
+    @Test
+    void updateEntity1() throws UnknownException {                
+        DaoEstadoAmistad dao = new DaoEstadoAmistad();
+        EstadoAmistad entity=dao.findEntity(null, 1, "B");
+        entity.setVersion(5L);
+        dao.saveOrUpdate(entity);
+    }
+    
+    @Test
+    void updateEntity2() throws UnknownException {                
+        DaoEstadoAmistad dao = new DaoEstadoAmistad();
+        EstadoAmistad entity=dao.findEntity(null, 1, "A");
+        entity.setVersion(6L);
+        dao.saveOrUpdate(entity);
+    }
+    
+    @Test
+    void updateEntity3() throws UnknownException {                
+        DaoEstadoAmistad dao = new DaoEstadoAmistad();
+        EstadoAmistad entity=dao.findEntity(null, 1, "E");
+        entity.setVersion(7L);
+        dao.saveOrUpdate(entity);
+    }
+    
+    
+    
+    @Test
+    void deleteEntity1() throws UnknownException {                
+        DaoEstadoAmistad dao = new DaoEstadoAmistad();
+        dao.delete("E","idEstadoAmistad");
+    }
+    
+    @Test
+    void deleteEntity2() throws UnknownException {        
+        DaoEstadoAmistad dao = new DaoEstadoAmistad();
+        dao.delete("B","idEstadoAmistad");
+    }
+    @Test
+    void deleteEntity3() throws UnknownException {        
+        DaoEstadoAmistad dao = new DaoEstadoAmistad();
+        dao.delete("A","idEstadoAmistad");
     }
 }

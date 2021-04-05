@@ -23,9 +23,7 @@ import lombok.extern.log4j.Log4j2;
 public class EstadoAmistad implements Serializable {
     @PrimaryKey
     @Persistent    
-    private String idEstadoAmistad;
-    @Persistent
-    private String codeEstadoAmistad;
+    private String idEstadoAmistad;    
     @Persistent
     private String descripcion;
     @Persistent

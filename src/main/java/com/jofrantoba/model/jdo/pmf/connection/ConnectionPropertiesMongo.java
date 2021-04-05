@@ -37,6 +37,7 @@ public class ConnectionPropertiesMongo extends AbstractConnectionProperties{
         props.setProperty("datanucleus.schema.autoCreateAll", "true");
         props.setProperty("datanucleus.validateConstraints", "false");
         props.setProperty("datanucleus.validateTables", "false");
+        props.setProperty("datanucleus.query.jdoql.allowAll","true");
         return props;
     }
     
