@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.jofrantoba.model.jdo.daoentity.testentityindiantmongo;
+package com.jofrantoba.model.jdo.daoentity.testentityindiantmongo.daoamistad;
 
 import java.io.Serializable;
 import javax.jdo.annotations.NotPersistent;

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.jofrantoba.model.jdo.daoentity.testentityindiantmongo;
+package com.jofrantoba.model.jdo.daoentity.testentityindiantmongo.daoamistad;
 
 import com.jofrantoba.model.jdo.daoentity.AbstractJdoDao;
 
@@ -11,7 +11,8 @@ import com.jofrantoba.model.jdo.daoentity.AbstractJdoDao;
  *
  * @author jona
  */
-public class DaoEstadoAmistad extends AbstractJdoDao<EstadoAmistad> implements InterDaoEstadoAmistad{
+public class DaoEstadoAmistad extends AbstractJdoDao<EstadoAmistad> 
+        implements InterDaoEstadoAmistad{
     public DaoEstadoAmistad(){
         super();
         setClazz(EstadoAmistad.class);        
