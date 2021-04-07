@@ -5,8 +5,6 @@
  */
 package com.jofrantoba.model.jdo.daoentity.testentityindiantmongo.daoamistad;
 
-import com.jofrantoba.model.jdo.daoentity.testentityindiantmongo.daoamistad.DaoEstadoAmistad;
-import com.jofrantoba.model.jdo.daoentity.testentityindiantmongo.daoamistad.EstadoAmistad;
 import com.jofrantoba.model.jdo.shared.UnknownException;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -42,18 +40,18 @@ public class TestDeleteEstadoAmistad {
     @Test
     void deleteEntity1() throws UnknownException {
         DaoEstadoAmistad dao = new DaoEstadoAmistad();
-        dao.delete("E", "idEstadoAmistad");
+        dao.delete("E", "id");
     }
 
     @Test
     void deleteEntity2() throws UnknownException {
         DaoEstadoAmistad dao = new DaoEstadoAmistad();
-        dao.delete("B", "idEstadoAmistad");
+        dao.delete("B", "id");
     }
 
     @Test
     void deleteEntity3() throws UnknownException {
         DaoEstadoAmistad dao = new DaoEstadoAmistad();
-        dao.delete("A", "idEstadoAmistad");
+        dao.delete("A", "id");
     }    
 }

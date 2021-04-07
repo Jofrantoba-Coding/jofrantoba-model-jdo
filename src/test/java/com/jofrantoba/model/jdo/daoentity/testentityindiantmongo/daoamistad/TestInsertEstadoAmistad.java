@@ -5,8 +5,6 @@
  */
 package com.jofrantoba.model.jdo.daoentity.testentityindiantmongo.daoamistad;
 
-import com.jofrantoba.model.jdo.daoentity.testentityindiantmongo.daoamistad.DaoEstadoAmistad;
-import com.jofrantoba.model.jdo.daoentity.testentityindiantmongo.daoamistad.EstadoAmistad;
 import com.jofrantoba.model.jdo.shared.UnknownException;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -42,7 +40,7 @@ public class TestInsertEstadoAmistad {
     @Test
     void createEntity1() throws UnknownException {
         EstadoAmistad entity = new EstadoAmistad();
-        entity.setIdEstadoAmistad("A");
+        entity.setId("A");
         entity.setDescripcion("ACTIVO");
         entity.setIsPersistente(Boolean.TRUE);
         entity.setVersion(1L);
@@ -53,7 +51,7 @@ public class TestInsertEstadoAmistad {
     @Test
     void createEntity2() throws UnknownException {
         EstadoAmistad entity = new EstadoAmistad();
-        entity.setIdEstadoAmistad("E");
+        entity.setId("E");
         entity.setDescripcion("ELIMINADO");
         entity.setVersion(1L);
         entity.setIsPersistente(Boolean.TRUE);
@@ -64,7 +62,7 @@ public class TestInsertEstadoAmistad {
     @Test
     void createEntity3() throws UnknownException {
         EstadoAmistad entity = new EstadoAmistad();
-        entity.setIdEstadoAmistad("B");
+        entity.setId("B");
         entity.setDescripcion("BLOQUEADO");
         entity.setIsPersistente(Boolean.TRUE);
         entity.setVersion(1L);

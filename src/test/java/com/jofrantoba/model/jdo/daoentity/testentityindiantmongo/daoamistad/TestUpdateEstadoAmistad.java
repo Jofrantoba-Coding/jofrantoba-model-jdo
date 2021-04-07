@@ -5,11 +5,10 @@
  */
 package com.jofrantoba.model.jdo.daoentity.testentityindiantmongo.daoamistad;
 
-import com.jofrantoba.model.jdo.daoentity.testentityindiantmongo.daoamistad.DaoEstadoAmistad;
-import com.jofrantoba.model.jdo.daoentity.testentityindiantmongo.daoamistad.EstadoAmistad;
 import com.jofrantoba.model.jdo.shared.UnknownException;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import javax.jdo.JDOHelper;
 import lombok.extern.log4j.Log4j2;
 import org.junit.After;
 import org.junit.Before;
@@ -44,14 +43,18 @@ public class TestUpdateEstadoAmistad {
     void updateEntity1() throws UnknownException {
         DaoEstadoAmistad dao = new DaoEstadoAmistad();
         EstadoAmistad entity = dao.findEntity(null, 1, "B");
+        entity.setDescripcion("BLO");
         entity.setVersion(5L);
+        System.err.println(JDOHelper.getObjectState(entity));
         dao.saveOrUpdate(entity);
     }   
     @Test
     void updateEntity2() throws UnknownException {                
         DaoEstadoAmistad dao = new DaoEstadoAmistad();
         EstadoAmistad entity=dao.findEntity(null, 1, "A");
+        entity.setDescripcion("ACT");
         entity.setVersion(6L);
+        System.err.println(JDOHelper.getObjectState(entity));
         dao.saveOrUpdate(entity);
     }
     
@@ -59,7 +62,9 @@ public class TestUpdateEstadoAmistad {
     void updateEntity3() throws UnknownException {                
         DaoEstadoAmistad dao = new DaoEstadoAmistad();
         EstadoAmistad entity=dao.findEntity(null, 1, "E");
+        entity.setDescripcion("ELI");
         entity.setVersion(7L);
+        System.err.println(JDOHelper.getObjectState(entity));
         dao.saveOrUpdate(entity);
     }
      

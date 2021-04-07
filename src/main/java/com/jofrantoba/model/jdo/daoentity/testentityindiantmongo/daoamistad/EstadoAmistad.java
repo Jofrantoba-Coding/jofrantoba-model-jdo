@@ -6,31 +6,21 @@
 package com.jofrantoba.model.jdo.daoentity.testentityindiantmongo.daoamistad;
 
 import java.io.Serializable;
-import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
-import lombok.Data;
-import lombok.extern.log4j.Log4j2;
+import lombok.Getter;
+import lombok.Setter;
+import com.jofrantoba.model.jdo.daoentity.testentityindiantmongo.GlobalEntityPkString;
 
 /**
  *
  * @author jona
  */
-@Data
-@Log4j2
-@PersistenceCapable(detachable = "true")
-public class EstadoAmistad implements Serializable {
-    @PrimaryKey
+@PersistenceCapable(detachable="true")
+public class EstadoAmistad extends GlobalEntityPkString implements Serializable{            
     @Persistent    
-    private String idEstadoAmistad;    
-    @Persistent
+    @Getter
+    @Setter
     private String descripcion;
-    @Persistent
-    private Long version;    
-    @Persistent
-    private Boolean isPersistente;
-    @NotPersistent
-    private String operacion;
 
 }
