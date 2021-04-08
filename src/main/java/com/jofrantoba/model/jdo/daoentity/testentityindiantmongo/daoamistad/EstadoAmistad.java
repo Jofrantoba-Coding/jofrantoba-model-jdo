@@ -11,16 +11,20 @@ import javax.jdo.annotations.Persistent;
 import lombok.Getter;
 import lombok.Setter;
 import com.jofrantoba.model.jdo.daoentity.testentityindiantmongo.GlobalEntityPkString;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.extern.log4j.Log4j2;
 
 /**
  *
  * @author jona
  */
+@Log4j2
+@EqualsAndHashCode(callSuper=false)
+@Data
 @PersistenceCapable(detachable="true")
 public class EstadoAmistad extends GlobalEntityPkString implements Serializable{            
     @Persistent    
-    @Getter
-    @Setter
     private String descripcion;
 
 }

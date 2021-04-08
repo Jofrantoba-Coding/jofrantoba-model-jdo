@@ -35,4 +35,14 @@
                 <goal>datanucleus:test-enhance-check</goal>
             </goals>
         </action>
+        <action>
+            <actionName>CUSTOM-CleanBuildWithoutTest</actionName>
+            <displayName>CleanBuildWithoutTest</displayName>
+            <goals>
+                <goal>clean</goal>
+                <goal>install</goal>
+                <goal>-DskipTests</goal>
+                
+            </goals>
+        </action>
     </actions>

@@ -24,24 +24,17 @@ import lombok.extern.log4j.Log4j2;
  * @author jona
  */
 @Log4j2
+@Data
 @PersistenceCapable(detachable="true")
 @Inheritance(strategy=InheritanceStrategy.SUBCLASS_TABLE)
 public abstract class GlobalEntityPkString implements Serializable{
     @PrimaryKey
     @Persistent  
-    @Getter
-    @Setter
     private String id;
-    @Persistent      
-    @Getter
-    @Setter
+    @Persistent          
     private Long version;    
-    @Persistent   
-    @Getter
-    @Setter
+    @Persistent      
     private Boolean isPersistente;
-    @NotPersistent    
-    @Getter
-    @Setter
+    @NotPersistent        
     private String operacion;
 }
