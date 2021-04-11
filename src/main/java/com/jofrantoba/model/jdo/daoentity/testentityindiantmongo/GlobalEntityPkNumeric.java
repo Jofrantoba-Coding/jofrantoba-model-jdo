@@ -6,6 +6,7 @@
 package com.jofrantoba.model.jdo.daoentity.testentityindiantmongo;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import javax.jdo.annotations.Inheritance;
 import javax.jdo.annotations.InheritanceStrategy;
 import javax.jdo.annotations.NotPersistent;
@@ -23,10 +24,10 @@ import lombok.extern.log4j.Log4j2;
 @Data
 @PersistenceCapable(detachable="true")
 @Inheritance(strategy=InheritanceStrategy.SUBCLASS_TABLE)
-public abstract class GlobalEntityPkString implements Serializable{
+public abstract class GlobalEntityPkNumeric implements Serializable{
     @PrimaryKey
     @Persistent  
-    private String id;
+    private Long id;
     @Persistent          
     private Long version;    
     @Persistent      
