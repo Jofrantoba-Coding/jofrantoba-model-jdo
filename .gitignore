@@ -27,3 +27,9 @@ hs_err_pid*
 
 # Files configuration Netbeans 11
 nb-configuration.xml
+
+# Files visual code config
+.classpath
+.factorypath
+.project
+.settings/
