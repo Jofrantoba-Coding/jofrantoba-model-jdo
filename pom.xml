@@ -155,8 +155,11 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>8</source>
-                    <target>8</target>
+                    <!--/*<verbose>true</verbose>*/-->
+                    <executable>E:\graalvm-ce-java8-20.0.0</executable>
+                    <source>1.8</source>
+                    <target>1.8</target>                    
+                    <release>8</release>
                 </configuration>
             </plugin>
             <plugin>
@@ -201,7 +204,7 @@
                         <id>process-test-classes</id>
                         <phase>process-test-classes</phase>
                         <goals>
-                            <goal>enhance</goal>
+                            <goal>test-enhance</goal>
                         </goals>
                         <configuration>
                             <metadataDirectory>${project.build.testOutputDirectory}</metadataDirectory>
