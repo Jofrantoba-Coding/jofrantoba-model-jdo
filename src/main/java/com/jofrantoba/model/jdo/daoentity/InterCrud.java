@@ -9,6 +9,7 @@ package com.jofrantoba.model.jdo.daoentity;
 import com.jofrantoba.model.jdo.shared.UnknownException;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
@@ -57,5 +58,6 @@ public interface InterCrud<T extends Serializable>{
     Long updateBulk(String fieldsValuesUpdate,String filter,Object[] valuesParam)throws UnknownException;
     Long updateBulk(PersistenceManager pm,String fieldsValuesUpdate,String filter,Object[] valuesParam)throws UnknownException;
     Long updateBulk(PersistenceManager pm,Transaction tx,String fieldsValuesUpdate,String filter,Object[] valuesParam)throws UnknownException;
+    void saveOrUpdateList(List<T> entitys) throws UnknownException;
     /*Map<?,T> allKeyValue(String fieldKey,String... arrayFields)throws UnknownException;*/
 }

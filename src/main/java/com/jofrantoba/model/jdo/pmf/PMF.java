@@ -27,7 +27,7 @@ public final class PMF {
     private static final String SCHEMASTATIC="indiant";
     //private static final ConnectionPropertiesOracle propsStatic = new ConnectionPropertiesOracle("192.168.1.4", 1521, "orcl", "sysdecorprueba", "sysdecorprueba");
     //private static final ConnectionPropertiesMemHsqldb propsStatic = new ConnectionPropertiesMemHsqldb("jofrantoba", "SA","");
-    private static final ConnectionPropertiesMongo propsStatic = new ConnectionPropertiesMongo("indiant", "","");
+    private static final ConnectionPropertiesMongo propsStatic = new ConnectionPropertiesMongo("indiant", "jofrantoba","lvDmek9ERF2qbGww");
     private static final PMF pmf = new PMF();    
     private final HashMap<String, PersistenceManagerFactory> mapPMF = new HashMap();
 

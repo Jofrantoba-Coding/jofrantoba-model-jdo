@@ -9,12 +9,15 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <version.javax.jdo>3.2.0-m13</version.javax.jdo>
-        <version.datanucleus-core>5.2.4</version.datanucleus-core>
-        <version.datanucleus-api-jdo>5.2.4</version.datanucleus-api-jdo>
+        <!--<version.javax.jdo>3.2.0-m13</version.javax.jdo>-->
+        <version.javax.jdo>3.2.0-m14-SNAPSHOT</version.javax.jdo>
+        <!--<version.datanucleus-core>5.2.4</version.datanucleus-core>-->
+        <version.datanucleus-core>6.0.0-m1-SNAPSHOT</version.datanucleus-core>
+        <!--<version.datanucleus-api-jdo>5.2.4</version.datanucleus-api-jdo>-->
+        <version.datanucleus-api-jdo>6.1.0-m1-SNAPSHOT</version.datanucleus-api-jdo>
         <version.datanucleus-jdo-query>5.0.9</version.datanucleus-jdo-query>
         <version.datanucleus-rdbms>5.2.4</version.datanucleus-rdbms>
-        <version.datanucleus-mongodb>5.2.1</version.datanucleus-mongodb>
+        <version.datanucleus-mongodb>5.3.1-SNAPSHOT</version.datanucleus-mongodb>
         <version.hibernate-validator-annotation-processor>4.1.0.Final</version.hibernate-validator-annotation-processor>
         <version.lombok>1.18.12</version.lombok>
         <version.slf4j-api>1.7.30</version.slf4j-api>
@@ -27,23 +30,47 @@
         <version.hamcrest-library>2.2</version.hamcrest-library>
         <version.mockito-all>2.0.2-beta</version.mockito-all>
         <version.hsqldb>2.5.1</version.hsqldb>
-        <version.mongodb-driver>3.12.7</version.mongodb-driver>
+        <version.mongodb-driver>4.3.0-beta1</version.mongodb-driver>
     </properties>
     <dependencies>                                        
         <dependency>
             <groupId>org.datanucleus</groupId>
             <artifactId>javax.jdo</artifactId>
             <version>${version.javax.jdo}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.datanucleus</groupId>
+            <artifactId>javax.jdo</artifactId>
+            <version>${version.javax.jdo}</version>
+            <classifier>sources</classifier>                  
         </dependency>
         <dependency>
             <groupId>org.datanucleus</groupId>
             <artifactId>datanucleus-core</artifactId>
             <version>${version.datanucleus-core}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.datanucleus</groupId>
+            <artifactId>datanucleus-core</artifactId>
+            <version>${version.datanucleus-core}</version>
+            <classifier>sources</classifier>                  
         </dependency>
         <dependency>
             <groupId>org.datanucleus</groupId>
             <artifactId>datanucleus-api-jdo</artifactId>
             <version>${version.datanucleus-api-jdo}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.datanucleus</groupId>
+            <artifactId>datanucleus-api-jdo</artifactId>
+            <version>${version.datanucleus-api-jdo}</version>
+            <classifier>sources</classifier>                  
         </dependency>
         <dependency>
             <groupId>org.datanucleus</groupId>
@@ -59,6 +86,14 @@
             <groupId>org.datanucleus</groupId>
             <artifactId>datanucleus-mongodb</artifactId>
             <version>${version.datanucleus-mongodb}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.datanucleus</groupId>
+            <artifactId>datanucleus-mongodb</artifactId>
+            <version>${version.datanucleus-mongodb}</version>
+            <classifier>sources</classifier>                  
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -129,7 +164,7 @@
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-driver</artifactId>
+            <artifactId>mongodb-driver-legacy</artifactId>
             <version>${version.mongodb-driver}</version> 
             <scope>test</scope>          
         </dependency>        
@@ -155,11 +190,11 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <!--/*<verbose>true</verbose>*/-->
-                    <executable>E:\graalvm-ce-java8-20.0.0</executable>
-                    <source>1.8</source>
-                    <target>1.8</target>                    
+                    <!--/*<verbose>true</verbose>
                     <release>8</release>
+                    <executable>E:\graalvm-ce-java8-20.0.0</executable>*/-->
+                    <source>1.8</source>
+                    <target>1.8</target>                                        
                 </configuration>
             </plugin>
             <plugin>

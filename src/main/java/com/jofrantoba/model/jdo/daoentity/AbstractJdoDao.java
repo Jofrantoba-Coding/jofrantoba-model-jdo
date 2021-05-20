@@ -54,6 +54,29 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
             }
         }
     }
+    
+    @Override
+    public void saveOrUpdateList(List<T> entitys) throws UnknownException {
+        PersistenceManager pm = null;
+        Transaction tx = null;
+        try {
+            PersistenceManagerFactory pmf = PMF.getClassPMF().getPMFStatic();
+            pm = pmf.getPersistenceManager();
+            tx = pm.currentTransaction();
+            tx.begin();              
+            pm.makePersistentAll(entitys);                    
+        } catch (Exception ex) {
+            rollback(pm, tx);
+            throw throwsException(ex, false);
+        } finally {
+            try {
+                commit(pm, tx);
+            } catch (Exception ex) {
+                rollback(pm, tx);
+                throw throwsException(ex, false);
+            }
+        }
+    }
 
     @Override
     public T saveOrUpdateReturn(T entity, boolean isDetach) throws UnknownException {
