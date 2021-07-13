@@ -42,7 +42,7 @@ public class TestUpdateEstadoAmistad {
     @Test
     void updateEntity1() throws UnknownException {
         DaoEstadoAmistad dao = new DaoEstadoAmistad();
-        EstadoAmistad entity = dao.findEntity(null, 1, "B");
+        EstadoAmistad entity = dao.find(null, 1, "B");
         entity.setDescripcion("BLO");
         entity.setVersion(5L);
         System.err.println(JDOHelper.getObjectState(entity));
@@ -51,7 +51,7 @@ public class TestUpdateEstadoAmistad {
     @Test
     void updateEntity2() throws UnknownException {                
         DaoEstadoAmistad dao = new DaoEstadoAmistad();
-        EstadoAmistad entity=dao.findEntity(null, 1, "A");
+        EstadoAmistad entity=dao.find(null, 1, "A");
         entity.setDescripcion("ACT");
         entity.setVersion(6L);
         System.err.println(JDOHelper.getObjectState(entity));
@@ -61,7 +61,7 @@ public class TestUpdateEstadoAmistad {
     @Test
     void updateEntity3() throws UnknownException {                
         DaoEstadoAmistad dao = new DaoEstadoAmistad();
-        EstadoAmistad entity=dao.findEntity(null, 1, "E");
+        EstadoAmistad entity=dao.find(null, 1, "E");
         entity.setDescripcion("ELI");
         entity.setVersion(7L);
         System.err.println(JDOHelper.getObjectState(entity));

@@ -1,4 +1,4 @@
-/*
+    /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -60,11 +60,16 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
         PersistenceManager pm = null;
         Transaction tx = null;
         try {
-            PersistenceManagerFactory pmf = PMF.getClassPMF().getPMFStatic();
-            pm = pmf.getPersistenceManager();
-            tx = pm.currentTransaction();
-            tx.begin();              
-            pm.makePersistentAll(entitys);                    
+            PersistenceManagerFactory pmf = PMF.getClassPMF().getPMFStatic();            
+            pm = pmf.getPersistenceManager();                
+            pm.setDetachAllOnCommit(false);
+            pm.setIgnoreCache(true);                 
+            tx = pm.currentTransaction();            
+            tx.setOptimistic(false);            
+            tx.begin();    
+            //tx.setRetainValues(false);            
+            pm.makePersistentAll(entitys);                                
+            //pm.makeInsertBulk(entitys);
         } catch (Exception ex) {
             rollback(pm, tx);
             throw throwsException(ex, false);
@@ -431,7 +436,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public Collection<T> allFieldsEntity(PersistenceManagerFactory pmf, PersistenceManager pm, Long limitInicio, Long limitFin, boolean loadSubClase, String[] members, Integer maxFetchDepth, String filter, Map paramValue, String order) throws UnknownException {
+    public Collection<T> allFields(PersistenceManagerFactory pmf, PersistenceManager pm, Long limitInicio, Long limitFin, boolean loadSubClase, String[] members, Integer maxFetchDepth, String filter, Map paramValue, String order) throws UnknownException {
         Query<T> query = null;
         try {
             Extent extent = pm.getExtent(clazz, loadSubClase);
@@ -447,7 +452,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public Collection<T> allFieldsEntity(Long limitInicio, Long limitFin, boolean loadSubClase, String[] members, Integer maxFetchDepth, String filter, Map paramValue, String order) throws UnknownException {
+    public Collection<T> allFields(Long limitInicio, Long limitFin, boolean loadSubClase, String[] members, Integer maxFetchDepth, String filter, Map paramValue, String order) throws UnknownException {
         Query<T> query = null;
         PersistenceManager pm = null;
         try {
@@ -466,7 +471,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public Collection<T> allFieldsEntity(PersistenceManagerFactory pmf, PersistenceManager pm, boolean loadSubClase, String[] members, Integer maxFetchDepth, String filter, Map paramValue, String order) throws UnknownException {
+    public Collection<T> allFields(PersistenceManagerFactory pmf, PersistenceManager pm, boolean loadSubClase, String[] members, Integer maxFetchDepth, String filter, Map paramValue, String order) throws UnknownException {
         Query<T> query = null;
         try {
             Extent extent = pm.getExtent(clazz, loadSubClase);
@@ -482,7 +487,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public Collection<T> allFieldsEntity(boolean loadSubClase, String[] members, Integer maxFetchDepth, String filter, Map paramValue, String order) throws UnknownException {
+    public Collection<T> allFields(boolean loadSubClase, String[] members, Integer maxFetchDepth, String filter, Map paramValue, String order) throws UnknownException {
         Query<T> query = null;
         PersistenceManager pm = null;
         try {
@@ -501,7 +506,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
     
     @Override
-    public Collection<T> allFieldsEntity(PersistenceManagerFactory pmf,PersistenceManager pm) throws UnknownException {
+    public Collection<T> allFields(PersistenceManagerFactory pmf,PersistenceManager pm) throws UnknownException {
         Query<T> query = null;        
         try {                       
             Extent extent = pm.getExtent(clazz, true);
@@ -515,7 +520,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
     
     @Override
-    public Collection<T> allFieldsEntity() throws UnknownException {
+    public Collection<T> allFields() throws UnknownException {
         Query<T> query = null;
         PersistenceManager pm = null;
         try {
@@ -532,7 +537,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public Collection<T> customFieldEntity(boolean loadSubClase, String[] members, Integer maxFetchDepth, Long limitInicio, Long limitFin, String fields, String filter, Map paramValue, String order) throws UnknownException {
+    public Collection<T> customField(boolean loadSubClase, String[] members, Integer maxFetchDepth, Long limitInicio, Long limitFin, String fields, String filter, Map paramValue, String order) throws UnknownException {
         Query<T> query = null;
         PersistenceManager pm = null;
         try {
@@ -553,7 +558,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public Collection<T> customFieldEntity(boolean loadSubClase, String[] members, Integer maxFetchDepth, String fields, String filter, Map paramValue, String order) throws UnknownException {
+    public Collection<T> customField(boolean loadSubClase, String[] members, Integer maxFetchDepth, String fields, String filter, Map paramValue, String order) throws UnknownException {
         Query<T> query = null;
         PersistenceManager pm = null;
         try {
@@ -574,7 +579,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public Collection<T> customFieldEntity(PersistenceManagerFactory pmf, PersistenceManager pm, boolean loadSubClase, String[] members, Integer maxFetchDepth, Long limitInicio, Long limitFin, String fields, String filter, Map paramValue, String order) throws UnknownException {
+    public Collection<T> customField(PersistenceManagerFactory pmf, PersistenceManager pm, boolean loadSubClase, String[] members, Integer maxFetchDepth, Long limitInicio, Long limitFin, String fields, String filter, Map paramValue, String order) throws UnknownException {
         Query<T> query = null;
         try {
             Extent extent = pm.getExtent(clazz, loadSubClase);
@@ -592,7 +597,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public Collection<T> customFieldEntity(PersistenceManagerFactory pmf, PersistenceManager pm, boolean loadSubClase, String[] members, Integer maxFetchDepth, String fields, String filter, Map paramValue, String order) throws UnknownException {
+    public Collection<T> customField(PersistenceManagerFactory pmf, PersistenceManager pm, boolean loadSubClase, String[] members, Integer maxFetchDepth, String fields, String filter, Map paramValue, String order) throws UnknownException {
         Query<T> query = null;
         try {
             Extent extent = pm.getExtent(clazz, loadSubClase);
@@ -610,7 +615,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public T allFieldsEntity(PersistenceManagerFactory pmf, PersistenceManager pm, boolean loadSubClase, String[] members, Integer maxFetchDepth, Long idEntity, String fieldId) throws UnknownException {
+    public T allFields(PersistenceManagerFactory pmf, PersistenceManager pm, boolean loadSubClase, String[] members, Integer maxFetchDepth, Long idEntity, String fieldId) throws UnknownException {
         Query<T> query = null;
         try {
             Extent extent = pm.getExtent(clazz, loadSubClase);
@@ -624,7 +629,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public T allFieldsEntity(boolean loadSubClase, String[] members, Integer maxFetchDepth, Long idEntity, String fieldId) throws UnknownException {
+    public T allFields(boolean loadSubClase, String[] members, Integer maxFetchDepth, Long idEntity, String fieldId) throws UnknownException {
         Query<T> query = null;
         PersistenceManager pm = null;
         try {
@@ -641,7 +646,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public T allFieldsEntity(PersistenceManagerFactory pmf, PersistenceManager pm, boolean loadSubClase, String[] members, Integer maxFetchDepth, String idEntity, String fieldId, boolean isIdTypeDataCharacter) throws UnknownException {
+    public T allFields(PersistenceManagerFactory pmf, PersistenceManager pm, boolean loadSubClase, String[] members, Integer maxFetchDepth, String idEntity, String fieldId, boolean isIdTypeDataCharacter) throws UnknownException {
         Query<T> query = null;
         try {
             Extent extent = pm.getExtent(clazz, loadSubClase);
@@ -655,7 +660,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public T allFieldsEntity(boolean loadSubClase, String[] members, Integer maxFetchDepth, String idEntity, String fieldId, boolean isIdTypeDataCharacter) throws UnknownException {
+    public T allFields(boolean loadSubClase, String[] members, Integer maxFetchDepth, String idEntity, String fieldId, boolean isIdTypeDataCharacter) throws UnknownException {
         Query<T> query = null;
         PersistenceManager pm = null;
         try {
@@ -672,7 +677,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public T customFieldEntity(PersistenceManagerFactory pmf, PersistenceManager pm, boolean loadSubClase, String[] members, Integer maxFetchDepth, String fields, Long idEntity, String fieldId) throws UnknownException {
+    public T customField(PersistenceManagerFactory pmf, PersistenceManager pm, boolean loadSubClase, String[] members, Integer maxFetchDepth, String fields, Long idEntity, String fieldId) throws UnknownException {
         Query<T> query = null;
         try {
             Extent extent = pm.getExtent(clazz, loadSubClase);
@@ -686,7 +691,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public T customFieldEntity(boolean loadSubClase, String[] members, Integer maxFetchDepth, String fields, Long idEntity, String fieldId) throws UnknownException {
+    public T customField(boolean loadSubClase, String[] members, Integer maxFetchDepth, String fields, Long idEntity, String fieldId) throws UnknownException {
         Query<T> query = null;
         PersistenceManager pm = null;
         try {
@@ -703,7 +708,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public T customFieldEntity(PersistenceManagerFactory pmf, PersistenceManager pm, boolean loadSubClase, String[] members, Integer maxFetchDepth, String fields, String idEntity, String fieldId, boolean isIdTypeDataCharacter) throws UnknownException {
+    public T customField(PersistenceManagerFactory pmf, PersistenceManager pm, boolean loadSubClase, String[] members, Integer maxFetchDepth, String fields, String idEntity, String fieldId, boolean isIdTypeDataCharacter) throws UnknownException {
         Query<T> query = null;
         try {
             Extent extent = pm.getExtent(clazz, loadSubClase);
@@ -717,7 +722,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public T customFieldEntity(boolean loadSubClase, String[] members, Integer maxFetchDepth, String fields, String idEntity, String fieldId, boolean isIdTypeDataCharacter) throws UnknownException {
+    public T customField(boolean loadSubClase, String[] members, Integer maxFetchDepth, String fields, String idEntity, String fieldId, boolean isIdTypeDataCharacter) throws UnknownException {
         Query<T> query = null;
         PersistenceManager pm = null;
         try {
@@ -734,7 +739,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public T findEntity(String[] members, Integer maxFetchDepth, Object id) throws UnknownException {
+    public T find(String[] members, Integer maxFetchDepth, Object id) throws UnknownException {
         PersistenceManager pm = null;
         try {
             PersistenceManagerFactory pmf = PMF.getClassPMF().getPMFStatic();
@@ -749,7 +754,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public T findEntity(PersistenceManagerFactory pmf, PersistenceManager pm, String[] members, Integer maxFetchDepth, Object id) throws UnknownException {
+    public T find(PersistenceManagerFactory pmf, PersistenceManager pm, String[] members, Integer maxFetchDepth, Object id) throws UnknownException {
         try {
             membersFetchPlan(members, pmf, pm, maxFetchDepth);
             return pm.detachCopy(pm.getObjectById(clazz, id));
@@ -759,7 +764,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public T findEntityIdChar(String[] members, Integer maxFetchDepth, String fieldId, String id) throws UnknownException {
+    public T findIdChar(String[] members, Integer maxFetchDepth, String fieldId, String id) throws UnknownException {
         Query<T> query = null;
         PersistenceManager pm = null;
         try {
@@ -775,7 +780,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public T findEntityIdChar(PersistenceManagerFactory pmf, PersistenceManager pm, String[] members, Integer maxFetchDepth, String fieldId, String id) throws UnknownException {
+    public T findIdChar(PersistenceManagerFactory pmf, PersistenceManager pm, String[] members, Integer maxFetchDepth, String fieldId, String id) throws UnknownException {
         Query<T> query = null;
         try {
             query = pm.newQuery(clazz);

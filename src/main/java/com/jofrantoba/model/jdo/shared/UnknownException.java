@@ -1,9 +1,6 @@
 package com.jofrantoba.model.jdo.shared;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.IdentityHashMap;
-import java.util.Set;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 

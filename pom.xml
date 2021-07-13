@@ -10,7 +10,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <!--<version.javax.jdo>3.2.0-m13</version.javax.jdo>-->
-        <version.javax.jdo>3.2.0-m14-SNAPSHOT</version.javax.jdo>
+        <version.javax.jdo>3.2.0-m15-SNAPSHOT</version.javax.jdo>
         <!--<version.datanucleus-core>5.2.4</version.datanucleus-core>-->
         <version.datanucleus-core>6.0.0-m1-SNAPSHOT</version.datanucleus-core>
         <!--<version.datanucleus-api-jdo>5.2.4</version.datanucleus-api-jdo>-->

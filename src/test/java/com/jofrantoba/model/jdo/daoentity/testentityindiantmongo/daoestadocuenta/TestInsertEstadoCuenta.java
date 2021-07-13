@@ -9,6 +9,8 @@ import com.jofrantoba.model.jdo.shared.UnknownException;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.junit.After;
 import org.junit.Before;
@@ -38,7 +40,7 @@ public class TestInsertEstadoCuenta {
         System.setErr(originalErr);
     }
 
-    @Test
+    /*@Test
     void createEntity1() throws UnknownException {
         EstadoCuenta entity = new EstadoCuenta();
         entity.setId(1L);
@@ -69,6 +71,21 @@ public class TestInsertEstadoCuenta {
         entity.setVersion(1L);
         DaoEstadoCuenta dao = new DaoEstadoCuenta();
         dao.saveOrUpdate(entity);
+    }*/
+    
+    @Test
+    void createEntitys4() throws UnknownException {
+        List<EstadoCuenta> list=new ArrayList();
+        for(int i=1;i<100000;i++){
+            EstadoCuenta entity = new EstadoCuenta();
+            entity.setId(Long.valueOf(i));
+            entity.setDescripcion("BLOQUEADO "+i);
+            entity.setIsPersistente(Boolean.TRUE);
+            entity.setVersion(1L);
+            list.add(entity);
+        }        
+        DaoEstadoCuenta dao = new DaoEstadoCuenta();
+        dao.saveOrUpdateList(list);
     }
     
 }
