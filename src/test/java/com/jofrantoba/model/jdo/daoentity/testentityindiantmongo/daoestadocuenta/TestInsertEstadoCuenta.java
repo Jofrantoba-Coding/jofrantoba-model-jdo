@@ -73,19 +73,37 @@ public class TestInsertEstadoCuenta {
         dao.saveOrUpdate(entity);
     }*/
     
-    @Test
-    void createEntitys4() throws UnknownException {
+    /*@Test
+    void createEntitys4() throws UnknownException {        
         List<EstadoCuenta> list=new ArrayList();
-        for(int i=1;i<100000;i++){
+        for(int i=1;i<=1000000;i++){
             EstadoCuenta entity = new EstadoCuenta();
             entity.setId(Long.valueOf(i));
             entity.setDescripcion("BLOQUEADO "+i);
             entity.setIsPersistente(Boolean.TRUE);
             entity.setVersion(1L);
-            list.add(entity);
+            list.add(entity);            
         }        
-        DaoEstadoCuenta dao = new DaoEstadoCuenta();
+        DaoEstadoCuenta dao = new DaoEstadoCuenta();    
         dao.saveOrUpdateList(list);
-    }
+    }*/
+    
+    @Test
+    void createEntitys4() throws UnknownException {        
+        List<EstadoCuenta> list=new ArrayList();
+        DaoEstadoCuenta dao = new DaoEstadoCuenta();
+        for(int i=1;i<=1000000;i++){
+            EstadoCuenta entity = new EstadoCuenta();
+            entity.setId(Long.valueOf(i));
+            entity.setDescripcion("BLOQUEADO "+i);
+            entity.setIsPersistente(Boolean.TRUE);
+            entity.setVersion(1L);
+            list.add(entity);            
+            if(i%1000==0){
+                dao.insertBulk(list);      
+                list.removeAll(list);
+            }
+        }                        
+    }            
     
 }

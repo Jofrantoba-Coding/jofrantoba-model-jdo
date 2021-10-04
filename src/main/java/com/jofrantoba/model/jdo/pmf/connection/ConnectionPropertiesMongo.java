@@ -28,7 +28,12 @@ public class ConnectionPropertiesMongo extends AbstractConnectionProperties{
         //super.setUrlConnection("mongodb:clustersanboxindiant-shard-00-00.qmitb.mongodb.net/indiant,clustersanboxindiant-shard-00-01.qmitb.mongodb.net,clustersanboxindiant-shard-00-02.qmitb.mongodb.net");
         //super.setUrlConnection("mongodb://jofrantoba:lvDmek9ERF2qbGww@clustersanboxindiant-shard-00-00.qmitb.mongodb.net:27017,clustersanboxindiant-shard-00-01.qmitb.mongodb.net:27017,clustersanboxindiant-shard-00-02.qmitb.mongodb.net:27017/indiant?ssl=true&replicaSet=atlas-tdibxy-shard-0&authSource=admin&retryWrites=true&w=majority");
         //datanucleus.ConnectionURL=mongodb:[{server}][/{dbName}] [,{server2}[,server3}]]        
-        super.setUrlConnection("mongodb+srv://jofrantoba:lvDmek9ERF2qbGww@clustersanboxindiant.qmitb.mongodb.net/"+nameDatabase+"?retryWrites=true&w=majority");        
+        //super.setUrlConnection("mongodb+srv://jofrantoba:lvDmek9ERF2qbGww@clustersanboxindiant.qmitb.mongodb.net/"+nameDatabase+"?retryWrites=true&w=majority");//connection atlas mongo
+        //super.setUrlConnection("mongodb+srv://jofrantoba:lvDmek9ERF2qbGww@clustersanboxindiant.qmitb.mongodb.net/"+nameDatabase+"?retryWrites=true&w=majority");//connection atlas mongo
+        //super.setUrlConnection("mongodb://mtoral:Maej1019@ec2-34-222-157-77.us-west-2.compute.amazonaws.com:27017/"+nameDatabase+"?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&ssl=false");
+        //super.setUrlConnection("mongodb://mtoral:Maej1019@ec2-34-222-157-77.us-west-2.compute.amazonaws.com:27017/"+nameDatabase+"?retryWrites=true&w=majority&readPreference=primary&ssl=false");Router 1
+        //super.setUrlConnection("mongodb://mtoral:Maej1019@ec2-35-163-220-126.us-west-2.compute.amazonaws.com:27017/"+nameDatabase+"?retryWrites=true&w=majority&readPreference=primary&ssl=false");Router 2
+        super.setUrlConnection("mongodb://mtoral:Maej1019@ec2-35-163-220-126.us-west-2.compute.amazonaws.com:27017,ec2-34-222-157-77.us-west-2.compute.amazonaws.com:27017/"+nameDatabase+"?retryWrites=true&w=majority&readPreference=primary&ssl=false");
     }
     
     @Override
@@ -47,7 +52,7 @@ public class ConnectionPropertiesMongo extends AbstractConnectionProperties{
         //props.setProperty("datanucleus.mongodb.serverSelectionTimeout", "100000");
         //props.setProperty("datanucleus.mongodb.maxConnectionIdleTime",  "100000");    
         //props.setProperty("datanucleus.mongodb.socketTimeout",  "100000");    
-        props.setProperty("datanucleus.mongodb.sslEnabled","true");
+        props.setProperty("datanucleus.mongodb.sslEnabled","false");
         //props.setProperty("datanucleus.mongodb.replicaSetName","atlas-tdibxy-shard-0");
         System.setProperty("java.net.preferIPv4Stack" , "true");
         return props;

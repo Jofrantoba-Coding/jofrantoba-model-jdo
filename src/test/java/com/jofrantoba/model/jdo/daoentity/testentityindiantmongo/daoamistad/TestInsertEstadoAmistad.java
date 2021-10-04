@@ -8,6 +8,9 @@ package com.jofrantoba.model.jdo.daoentity.testentityindiantmongo.daoamistad;
 import com.jofrantoba.model.jdo.shared.UnknownException;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import lombok.extern.log4j.Log4j2;
 import org.junit.After;
 import org.junit.Before;
@@ -37,7 +40,7 @@ public class TestInsertEstadoAmistad {
         System.setErr(originalErr);
     }
 
-    @Test
+    /*@Test
     void createEntity1() throws UnknownException {
         EstadoAmistad entity = new EstadoAmistad();
         entity.setId("A");
@@ -68,6 +71,25 @@ public class TestInsertEstadoAmistad {
         entity.setVersion(1L);
         DaoEstadoAmistad dao = new DaoEstadoAmistad();
         dao.saveOrUpdate(entity);
+    }*/
+    
+    @Test
+    void createEntitys5() throws UnknownException {        
+        List<EstadoAmistad> list=new ArrayList();
+        DaoEstadoAmistad dao = new DaoEstadoAmistad();
+        for(int i=1;i<=1000000;i++){
+            EstadoAmistad entity = new EstadoAmistad();
+            entity.setId(UUID.randomUUID().toString());
+            entity.setDescripcion("BLOQUEADO "+i);
+            entity.setIsPersistente(Boolean.TRUE);
+            entity.setVersion(1L);
+            list.add(entity);    
+            if(i%10000==0){
+                dao.insertBulk(list);
+                list.removeAll(list);   
+            }            
+        }
+        //dao.insertBulk(list);
     }
     
 }

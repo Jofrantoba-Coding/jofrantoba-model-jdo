@@ -5,16 +5,18 @@
  */
 package com.jofrantoba.model.jdo.daoentity.testentityindiantmongo.daoamistad;
 
-import com.jofrantoba.model.jdo.daoentity.AbstractJdoDao;
+import com.jofrantoba.model.jdo.daoentity.AbstractMongoJdoDao;
+import com.jofrantoba.model.jdo.pmf.PMF;
 
 /**
  *
  * @author jona
  */
-public class DaoEstadoAmistad extends AbstractJdoDao<EstadoAmistad> 
+public class DaoEstadoAmistad extends AbstractMongoJdoDao<EstadoAmistad> 
         implements InterDaoEstadoAmistad{
     public DaoEstadoAmistad(){
         super();
-        setClazz(EstadoAmistad.class);        
+        this.setClazz(EstadoAmistad.class);       
+        this.setPmf(PMF.getClassPMF().getPMFStatic());
     }
 }

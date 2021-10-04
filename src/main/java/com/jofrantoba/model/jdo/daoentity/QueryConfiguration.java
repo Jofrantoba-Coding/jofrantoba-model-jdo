@@ -14,15 +14,16 @@ import javax.jdo.Query;
  */
 public class QueryConfiguration {
     public static void readConfigQuery(Query query){
-        query.extension("datanucleus.query.flushBeforeExecution", "true");
-        query.extension("datanucleus.query.loadResultsAtCommit", "false");                
+        query.extension("datanucleus.query.flushBeforeExecution", "true");       
         query.addExtension("datanucleus.rdbms.query.resultSetConcurrency", "read-only");
         query.addExtension("datanucleus.rdbms.query.resultSetType", "forward-only");
         query.addExtension("datanucleus.rdbms.query.fetchDirection", "forward");
         query.addExtension("datanucleus.query.resultCacheType", "none");
         query.addExtension("datanucleus.cache.level1.type","none");
         query.ignoreCache(true);
-        query.datastoreReadTimeoutMillis(PMF.DATASTOREREADTIMEOUTMILLIS);
+        /*No soportadas para MongoDB*/
+        //query.datastoreReadTimeoutMillis(PMF.DATASTOREREADTIMEOUTMILLIS);
+        //query.extension("datanucleus.query.loadResultsAtCommit", "false");                
     }
     
     public static String nameGroup(Class<?> clazz,String[] members){

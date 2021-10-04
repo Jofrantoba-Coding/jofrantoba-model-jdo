@@ -5,7 +5,6 @@
  */
 package com.jofrantoba.model.jdo.daoentity;
 
-import com.jofrantoba.model.jdo.pmf.PMF;
 import com.jofrantoba.model.jdo.shared.UnknownException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -28,17 +27,21 @@ import lombok.extern.log4j.Log4j2;
  */
 @Log4j2
 @Data
-public abstract class AbstractJdoDao<T extends Serializable> implements InterCrud<T> {
+public abstract class AbstractGeneralJdoDao<T extends Serializable> implements InterCrud<T> {
+    private PersistenceManagerFactory pmf;
+    protected Class<T> clazz;
 
-    private Class<T> clazz;
+    public PersistenceManager getCurrentPm(){
+        PersistenceManager pm=pmf.getPersistenceManager();
+        return pm;
+    }
 
     @Override
     public void saveOrUpdate(T entity) throws UnknownException {
         PersistenceManager pm = null;
         Transaction tx = null;
-        try {
-            PersistenceManagerFactory pmf = PMF.getClassPMF().getPMFStatic();
-            pm = pmf.getPersistenceManager();
+        try {           
+            pm = this.getCurrentPm();
             tx = pm.currentTransaction();
             tx.begin();            
             pm.makePersistent(entity);            
@@ -56,20 +59,41 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
     
     @Override
+    public Integer insertBulk(List<T> entitys) throws UnknownException {  
+        PersistenceManager pm = null;
+        Transaction tx = null;
+        try {            
+            pm = this.getCurrentPm();                            
+            pm.setIgnoreCache(true);                             
+            tx = pm.currentTransaction();
+            tx.begin();
+            return pm.makeInsertBulk(entitys);
+        } catch (Exception ex) {  
+            rollback(pm, tx);
+            throw throwsException(ex, false);
+        } finally {
+            try {
+                commit(pm, tx);
+            } catch (Exception ex) {
+                rollback(pm, tx);
+                throw throwsException(ex, false);
+            }
+        }
+    }
+    
+    @Override
     public void saveOrUpdateList(List<T> entitys) throws UnknownException {
         PersistenceManager pm = null;
         Transaction tx = null;
-        try {
-            PersistenceManagerFactory pmf = PMF.getClassPMF().getPMFStatic();            
-            pm = pmf.getPersistenceManager();                
+        try {            
+            pm = this.getCurrentPm();
             pm.setDetachAllOnCommit(false);
             pm.setIgnoreCache(true);                 
             tx = pm.currentTransaction();            
             tx.setOptimistic(false);            
             tx.begin();    
-            //tx.setRetainValues(false);            
-            pm.makePersistentAll(entitys);                                
-            //pm.makeInsertBulk(entitys);
+            tx.setRetainValues(false);            
+            pm.makePersistentAll(entitys);            
         } catch (Exception ex) {
             rollback(pm, tx);
             throw throwsException(ex, false);
@@ -87,9 +111,8 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     public T saveOrUpdateReturn(T entity, boolean isDetach) throws UnknownException {
         PersistenceManager pm = null;
         Transaction tx = null;
-        try {
-            PersistenceManagerFactory pmf = PMF.getClassPMF().getPMFStatic();
-            pm = pmf.getPersistenceManager();
+        try {            
+            pm = this.getCurrentPm();
             tx = pm.currentTransaction();
             if (isDetach) {
                 pm.setDetachAllOnCommit(true);
@@ -112,61 +135,30 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public void saveOrUpdate(PersistenceManager pm, T entity) throws UnknownException {
-        Transaction tx = null;
-        try {
-            tx = pm.currentTransaction();
-            tx.begin();
+    public void saveOrUpdate(PersistenceManager pm, T entity) throws UnknownException {        
+        try {            
             pm.makePersistent(entity);
-        } catch (Exception ex) {
-            rollback(tx);
+        } catch (Exception ex) {            
             throw throwsException(ex, false);
-        } finally {
-            try {
-                commit(tx);
-            } catch (Exception ex) {
-                rollback(tx);
-                throw throwsException(ex, false);
-            }
-        }
+        } 
     }
 
     @Override
-    public T saveOrUpdateReturn(PersistenceManager pm, T entity, boolean isDetach) throws UnknownException {
-        Transaction tx = null;
-        try {
-            tx = pm.currentTransaction();
+    public T saveOrUpdateReturn(PersistenceManager pm,Transaction tx, T entity, boolean isDetach) throws UnknownException {        
+        try {    
             if (isDetach) {
-                pm.setDetachAllOnCommit(true);
+                pm.setDetachAllOnCommit(isDetach);
             } else {
-                tx.setRetainValues(true);
-            }
-            tx.begin();
+                tx.setRetainValues(!isDetach);
+            }           
             return pm.makePersistent(entity);
-        } catch (Exception ex) {
-            rollback(tx);
+        } catch (Exception ex) {            
             throw throwsException(ex, false);
-        } finally {
-            try {
-                commit(tx);
-            } catch (Exception ex) {
-                rollback(tx);
-                throw throwsException(ex, false);
-            }
-        }
+        } 
     }
-
+    
     @Override
-    public void saveOrUpdate(PersistenceManager pm, Transaction tx, T entity) throws UnknownException {
-        try {
-            pm.makePersistent(entity);
-        } catch (Exception ex) {
-            throw throwsException(ex, false);
-        }
-    }
-
-    @Override
-    public T saveOrUpdateReturn(PersistenceManager pm, Transaction tx, T entity) throws UnknownException {
+    public T saveOrUpdateReturnDetachCopy(PersistenceManager pm, T entity) throws UnknownException {
         try {
             return pm.detachCopy(pm.makePersistent(entity));
         } catch (Exception ex) {
@@ -179,9 +171,8 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
         Transaction tx = null;
         Query query = null;
         PersistenceManager pm = null;
-        try {
-            PersistenceManagerFactory pmf = PMF.getClassPMF().getPMFStatic();
-            pm = pmf.getPersistenceManager();
+        try {            
+            pm = this.getCurrentPm();
             tx = pm.currentTransaction();
             tx.begin();
             StringBuilder strJdoql = new StringBuilder();
@@ -206,41 +197,10 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
                 throw throwsException(ex, false);
             }
         }
-    }
+    }        
     
     @Override
-    public Long updateBulk(PersistenceManager pm,String fieldsValuesUpdate,String filter,Object[] valuesParam)throws UnknownException {
-        Transaction tx = null;
-        Query query = null;        
-        try {            
-            tx = pm.currentTransaction();
-            tx.begin();
-            StringBuilder strJdoql = new StringBuilder();
-            strJdoql.append("UPDATE").append(" ");
-            strJdoql.append(clazz.getCanonicalName()).append(" ").append("SET").append(" ");
-            strJdoql.append(fieldsValuesUpdate).append(" ");
-            strJdoql.append("WHERE").append(" ");
-            strJdoql.append(filter);            
-            query = pm.newQuery(strJdoql.toString());            
-            if(valuesParam!=null){
-                return (Long) query.executeWithArray(valuesParam);
-            }            
-            return (Long) query.execute();
-        } catch (Exception ex) {
-            rollback(tx, query);
-            throw throwsException(ex, false);
-        } finally {
-            try {
-                commit(tx, query);
-            } catch (Exception ex) {
-                rollback(pm, tx, query);
-                throw throwsException(ex, false);
-            }
-        }
-    }
-    
-    @Override
-    public Long updateBulk(PersistenceManager pm,Transaction tx,String fieldsValuesUpdate,String filter,Object[] valuesParam)throws UnknownException {    
+    public Long updateBulk(PersistenceManager pm,String fieldsValuesUpdate,String filter,Object[] valuesParam)throws UnknownException {    
         Query query = null;    
         try {            
             StringBuilder strJdoql = new StringBuilder();
@@ -266,9 +226,8 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
         Transaction tx = null;
         Query query = null;
         PersistenceManager pm = null;
-        try {
-            PersistenceManagerFactory pmf = PMF.getClassPMF().getPMFStatic();
-            pm = pmf.getPersistenceManager();
+        try {            
+            pm = this.getCurrentPm();
             tx = pm.currentTransaction();
             tx.begin();
             StringBuilder strJdoql = new StringBuilder();
@@ -295,41 +254,10 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
             }
         }
     }
+       
     
     @Override
-    public Long delete(PersistenceManager pm,Object id, String fieldId) throws UnknownException {
-        Transaction tx = null;
-        Query query = null;        
-        try {            
-            tx = pm.currentTransaction();
-            tx.begin();
-            StringBuilder strJdoql = new StringBuilder();
-            strJdoql.append("DELETE FROM").append(" ");
-            strJdoql.append(clazz.getCanonicalName()).append(" ");
-            strJdoql.append("WHERE").append(" ");
-            strJdoql.append(fieldId).append("==");
-            if (id.getClass().getSimpleName().equalsIgnoreCase("String")) {
-                strJdoql.append("'").append(id).append("'");
-            } else {
-                strJdoql.append(id);
-            }
-            query = pm.newQuery(strJdoql.toString());
-            return (Long) query.execute();
-        } catch (Exception ex) {
-            rollback(tx, query);
-            throw throwsException(ex, false);
-        } finally {
-            try {
-                commit(tx, query);
-            } catch (Exception ex) {
-                rollback(tx, query);
-                throw throwsException(ex, false);
-            }
-        }
-    }
-    
-    @Override
-    public Long delete(PersistenceManager pm,Transaction tx,Object id, String fieldId) throws UnknownException {        
+    public Long delete(PersistenceManager pm,Object id, String fieldId) throws UnknownException {        
         Query query = null;        
         try {            
             StringBuilder strJdoql = new StringBuilder();
@@ -356,9 +284,8 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
         Transaction tx = null;
         Query query = null;
         PersistenceManager pm = null;
-        try {
-            PersistenceManagerFactory pmf = PMF.getClassPMF().getPMFStatic();
-            pm = pmf.getPersistenceManager();
+        try {            
+            pm = this.getCurrentPm();
             tx = pm.currentTransaction();
             tx.begin();
             StringBuilder strJdoql = new StringBuilder();
@@ -383,39 +310,10 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
             }
         }
     }
+        
     
     @Override
-    public Long deleteBulkFilter(PersistenceManager pm,String filter,Object[] valuesParam) throws UnknownException {
-        Transaction tx = null;
-        Query query = null;        
-        try {            
-            tx = pm.currentTransaction();
-            tx.begin();
-            StringBuilder strJdoql = new StringBuilder();
-            strJdoql.append("DELETE FROM").append(" ");
-            strJdoql.append(clazz.getCanonicalName()).append(" ");
-            strJdoql.append("WHERE").append(" ");
-            strJdoql.append(filter);
-            query = pm.newQuery(strJdoql.toString());
-            if(valuesParam!=null){
-                return (Long) query.executeWithArray(valuesParam);
-            }            
-            return (Long) query.execute();
-        } catch (Exception ex) {
-            rollback(tx, query);
-            throw throwsException(ex, false);
-        } finally {
-            try {
-                commit(tx, query);
-            } catch (Exception ex) {
-                rollback(tx, query);
-                throw throwsException(ex, false);
-            }
-        }
-    }
-    
-    @Override
-    public Long deleteBulkFilter(PersistenceManager pm,Transaction tx,String filter,Object[] valuesParam) throws UnknownException {        
+    public Long deleteBulkFilter(PersistenceManager pm,String filter,Object[] valuesParam) throws UnknownException {        
         Query query = null;        
         try {            
             StringBuilder strJdoql = new StringBuilder();
@@ -436,14 +334,14 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public Collection<T> allFields(PersistenceManagerFactory pmf, PersistenceManager pm, Long limitInicio, Long limitFin, boolean loadSubClase, String[] members, Integer maxFetchDepth, String filter, Map paramValue, String order) throws UnknownException {
+    public Collection<T> allFields(PersistenceManager pm, Long limitInicio, Long limitFin, boolean loadSubClase, String[] members, Integer maxFetchDepth, String filter, Map paramValue, String order) throws UnknownException {
         Query<T> query = null;
         try {
             Extent extent = pm.getExtent(clazz, loadSubClase);
             query = pm.newQuery(extent);
             filter(query, filter, paramValue);
             order(query, order);
-            return allFieldsEntity(pmf, pm, query, limitInicio, limitFin, members, maxFetchDepth);
+            return allFieldsEntity(pm.getPersistenceManagerFactory(), pm, query, limitInicio, limitFin, members, maxFetchDepth);
         } catch (Exception ex) {
             throw throwsException(ex, false);
         } finally {
@@ -455,9 +353,8 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     public Collection<T> allFields(Long limitInicio, Long limitFin, boolean loadSubClase, String[] members, Integer maxFetchDepth, String filter, Map paramValue, String order) throws UnknownException {
         Query<T> query = null;
         PersistenceManager pm = null;
-        try {
-            PersistenceManagerFactory pmf = PMF.getClassPMF().getPMFStatic();
-            pm = pmf.getPersistenceManager();
+        try {            
+            pm = this.getCurrentPm();
             Extent extent = pm.getExtent(clazz, loadSubClase);
             query = pm.newQuery(extent);
             filter(query, filter, paramValue);
@@ -471,14 +368,14 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public Collection<T> allFields(PersistenceManagerFactory pmf, PersistenceManager pm, boolean loadSubClase, String[] members, Integer maxFetchDepth, String filter, Map paramValue, String order) throws UnknownException {
+    public Collection<T> allFields(PersistenceManager pm, boolean loadSubClase, String[] members, Integer maxFetchDepth, String filter, Map paramValue, String order) throws UnknownException {
         Query<T> query = null;
         try {
             Extent extent = pm.getExtent(clazz, loadSubClase);
             query = pm.newQuery(extent);
             filter(query, filter, paramValue);
             order(query, order);
-            return allFieldsEntity(pmf, pm, query, members, maxFetchDepth);
+            return allFieldsEntity(pm.getPersistenceManagerFactory(), pm, query, members, maxFetchDepth);
         } catch (Exception ex) {
             throw throwsException(ex, false);
         } finally {
@@ -490,28 +387,27 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     public Collection<T> allFields(boolean loadSubClase, String[] members, Integer maxFetchDepth, String filter, Map paramValue, String order) throws UnknownException {
         Query<T> query = null;
         PersistenceManager pm = null;
-        try {
-            PersistenceManagerFactory pmf = PMF.getClassPMF().getPMFStatic();
-            pm = pmf.getPersistenceManager();
+        try {            
+            pm = this.getCurrentPm();
             Extent extent = pm.getExtent(clazz, loadSubClase);
             query = pm.newQuery(extent);
             filter(query, filter, paramValue);
             order(query, order);
             return allFieldsEntity(pmf, pm, query, members, maxFetchDepth);
         } catch (Exception ex) {
-            throw throwsException(ex, false);
+            throw throwsException(ex, true);
         } finally {
             closeQueryConnection(pm, query);
         }
     }
     
     @Override
-    public Collection<T> allFields(PersistenceManagerFactory pmf,PersistenceManager pm) throws UnknownException {
+    public Collection<T> allFields(PersistenceManager pm) throws UnknownException {
         Query<T> query = null;        
         try {                       
             Extent extent = pm.getExtent(clazz, true);
             query = pm.newQuery(extent);                        
-            return allFieldsEntity(pmf, pm, query, null, 1);
+            return allFieldsEntity(pm.getPersistenceManagerFactory(), pm, query, null, 1);
         } catch (Exception ex) {
             throw throwsException(ex, false);
         } finally {
@@ -523,14 +419,13 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     public Collection<T> allFields() throws UnknownException {
         Query<T> query = null;
         PersistenceManager pm = null;
-        try {
-            PersistenceManagerFactory pmf = PMF.getClassPMF().getPMFStatic();
-            pm = pmf.getPersistenceManager();
+        try {            
+            pm = this.getCurrentPm();
             Extent extent = pm.getExtent(clazz, true);
             query = pm.newQuery(extent);                        
             return allFieldsEntity(pmf, pm, query, null, 1);
         } catch (Exception ex) {
-            throw throwsException(ex, false);
+            throw throwsException(ex, true);
         } finally {
             closeQueryConnection(pm, query);
         }
@@ -540,9 +435,8 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     public Collection<T> customField(boolean loadSubClase, String[] members, Integer maxFetchDepth, Long limitInicio, Long limitFin, String fields, String filter, Map paramValue, String order) throws UnknownException {
         Query<T> query = null;
         PersistenceManager pm = null;
-        try {
-            PersistenceManagerFactory pmf = PMF.getClassPMF().getPMFStatic();
-            pm = pmf.getPersistenceManager();
+        try {            
+            pm = this.getCurrentPm();
             Extent extent = pm.getExtent(clazz, loadSubClase);
             query = pm.newQuery(extent);
             filter(query, filter, paramValue);
@@ -561,9 +455,8 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     public Collection<T> customField(boolean loadSubClase, String[] members, Integer maxFetchDepth, String fields, String filter, Map paramValue, String order) throws UnknownException {
         Query<T> query = null;
         PersistenceManager pm = null;
-        try {
-            PersistenceManagerFactory pmf = PMF.getClassPMF().getPMFStatic();
-            pm = pmf.getPersistenceManager();
+        try {            
+            pm = this.getCurrentPm();
             Extent extent = pm.getExtent(clazz, loadSubClase);
             query = pm.newQuery(extent);
             filter(query, filter, paramValue);
@@ -579,7 +472,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public Collection<T> customField(PersistenceManagerFactory pmf, PersistenceManager pm, boolean loadSubClase, String[] members, Integer maxFetchDepth, Long limitInicio, Long limitFin, String fields, String filter, Map paramValue, String order) throws UnknownException {
+    public Collection<T> customField(PersistenceManager pm, boolean loadSubClase, String[] members, Integer maxFetchDepth, Long limitInicio, Long limitFin, String fields, String filter, Map paramValue, String order) throws UnknownException {
         Query<T> query = null;
         try {
             Extent extent = pm.getExtent(clazz, loadSubClase);
@@ -587,7 +480,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
             filter(query, filter, paramValue);
             order(query, order);
             List<T> lista = new ArrayList();
-            lista.addAll(customFieldsEntity(pmf, pm, query, limitInicio, limitFin, members, maxFetchDepth, fields));
+            lista.addAll(customFieldsEntity(pm.getPersistenceManagerFactory(), pm, query, limitInicio, limitFin, members, maxFetchDepth, fields));
             return lista;
         } catch (Exception ex) {
             throw throwsException(ex, false);
@@ -597,7 +490,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public Collection<T> customField(PersistenceManagerFactory pmf, PersistenceManager pm, boolean loadSubClase, String[] members, Integer maxFetchDepth, String fields, String filter, Map paramValue, String order) throws UnknownException {
+    public Collection<T> customField(PersistenceManager pm, boolean loadSubClase, String[] members, Integer maxFetchDepth, String fields, String filter, Map paramValue, String order) throws UnknownException {
         Query<T> query = null;
         try {
             Extent extent = pm.getExtent(clazz, loadSubClase);
@@ -605,7 +498,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
             filter(query, filter, paramValue);
             order(query, order);
             List<T> lista = new ArrayList();
-            lista.addAll(customFieldsEntity(pmf, pm, query, members, maxFetchDepth, fields));
+            lista.addAll(customFieldsEntity(pm.getPersistenceManagerFactory(), pm, query, members, maxFetchDepth, fields));
             return lista;
         } catch (Exception ex) {
             throw throwsException(ex, false);
@@ -615,12 +508,12 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public T allFields(PersistenceManagerFactory pmf, PersistenceManager pm, boolean loadSubClase, String[] members, Integer maxFetchDepth, Long idEntity, String fieldId) throws UnknownException {
+    public T allFields(PersistenceManager pm, boolean loadSubClase, String[] members, Integer maxFetchDepth, Long idEntity, String fieldId) throws UnknownException {
         Query<T> query = null;
         try {
             Extent extent = pm.getExtent(clazz, loadSubClase);
             query = pm.newQuery(extent);
-            return fieldsEntity(pmf, pm, query, members, maxFetchDepth, idEntity, fieldId, false, null);
+            return fieldsEntity(pm.getPersistenceManagerFactory(), pm, query, members, maxFetchDepth, idEntity, fieldId, false, null);
         } catch (Exception ex) {
             throw throwsException(ex, false);
         } finally {
@@ -632,9 +525,8 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     public T allFields(boolean loadSubClase, String[] members, Integer maxFetchDepth, Long idEntity, String fieldId) throws UnknownException {
         Query<T> query = null;
         PersistenceManager pm = null;
-        try {
-            PersistenceManagerFactory pmf = PMF.getClassPMF().getPMFStatic();
-            pm = pmf.getPersistenceManager();
+        try {            
+            pm = this.getCurrentPm();
             Extent extent = pm.getExtent(clazz, loadSubClase);
             query = pm.newQuery(extent);
             return fieldsEntity(pmf, pm, query, members, maxFetchDepth, idEntity, fieldId, false, null);
@@ -646,12 +538,12 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public T allFields(PersistenceManagerFactory pmf, PersistenceManager pm, boolean loadSubClase, String[] members, Integer maxFetchDepth, String idEntity, String fieldId, boolean isIdTypeDataCharacter) throws UnknownException {
+    public T allFields(PersistenceManager pm, boolean loadSubClase, String[] members, Integer maxFetchDepth, String idEntity, String fieldId, boolean isIdTypeDataCharacter) throws UnknownException {
         Query<T> query = null;
         try {
             Extent extent = pm.getExtent(clazz, loadSubClase);
             query = pm.newQuery(extent);
-            return fieldsEntity(pmf, pm, query, members, maxFetchDepth, idEntity, fieldId, isIdTypeDataCharacter, null);
+            return fieldsEntity(pm.getPersistenceManagerFactory(), pm, query, members, maxFetchDepth, idEntity, fieldId, isIdTypeDataCharacter, null);
         } catch (Exception ex) {
             throw throwsException(ex, false);
         } finally {
@@ -663,26 +555,25 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     public T allFields(boolean loadSubClase, String[] members, Integer maxFetchDepth, String idEntity, String fieldId, boolean isIdTypeDataCharacter) throws UnknownException {
         Query<T> query = null;
         PersistenceManager pm = null;
-        try {
-            PersistenceManagerFactory pmf = PMF.getClassPMF().getPMFStatic();
-            pm = pmf.getPersistenceManager();
+        try {           
+            pm = this.getCurrentPm();
             Extent extent = pm.getExtent(clazz, loadSubClase);
             query = pm.newQuery(extent);
             return fieldsEntity(pmf, pm, query, members, maxFetchDepth, idEntity, fieldId, isIdTypeDataCharacter, null);
         } catch (Exception ex) {
-            throw throwsException(ex, false);
+            throw throwsException(ex, true);
         } finally {
             closeQueryConnection(pm, query);
         }
     }
 
     @Override
-    public T customField(PersistenceManagerFactory pmf, PersistenceManager pm, boolean loadSubClase, String[] members, Integer maxFetchDepth, String fields, Long idEntity, String fieldId) throws UnknownException {
+    public T customField(PersistenceManager pm, boolean loadSubClase, String[] members, Integer maxFetchDepth, String fields, Long idEntity, String fieldId) throws UnknownException {
         Query<T> query = null;
         try {
             Extent extent = pm.getExtent(clazz, loadSubClase);
             query = pm.newQuery(extent);
-            return fieldsEntity(pmf, pm, query, members, maxFetchDepth, idEntity, fieldId, false, fields);
+            return fieldsEntity(pm.getPersistenceManagerFactory(), pm, query, members, maxFetchDepth, idEntity, fieldId, false, fields);
         } catch (Exception ex) {
             throw throwsException(ex, false);
         } finally {
@@ -694,9 +585,8 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     public T customField(boolean loadSubClase, String[] members, Integer maxFetchDepth, String fields, Long idEntity, String fieldId) throws UnknownException {
         Query<T> query = null;
         PersistenceManager pm = null;
-        try {
-            PersistenceManagerFactory pmf = PMF.getClassPMF().getPMFStatic();
-            pm = pmf.getPersistenceManager();
+        try {           
+            pm = this.getCurrentPm();
             Extent extent = pm.getExtent(clazz, loadSubClase);
             query = pm.newQuery(extent);
             return fieldsEntity(pmf, pm, query, members, maxFetchDepth, idEntity, fieldId, false, fields);
@@ -708,12 +598,12 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public T customField(PersistenceManagerFactory pmf, PersistenceManager pm, boolean loadSubClase, String[] members, Integer maxFetchDepth, String fields, String idEntity, String fieldId, boolean isIdTypeDataCharacter) throws UnknownException {
+    public T customField(PersistenceManager pm, boolean loadSubClase, String[] members, Integer maxFetchDepth, String fields, String idEntity, String fieldId, boolean isIdTypeDataCharacter) throws UnknownException {
         Query<T> query = null;
         try {
             Extent extent = pm.getExtent(clazz, loadSubClase);
             query = pm.newQuery(extent);
-            return fieldsEntity(pmf, pm, query, members, maxFetchDepth, idEntity, fieldId, isIdTypeDataCharacter, fields);
+            return fieldsEntity(pm.getPersistenceManagerFactory(), pm, query, members, maxFetchDepth, idEntity, fieldId, isIdTypeDataCharacter, fields);
         } catch (Exception ex) {
             throw throwsException(ex, false);
         } finally {
@@ -725,9 +615,8 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     public T customField(boolean loadSubClase, String[] members, Integer maxFetchDepth, String fields, String idEntity, String fieldId, boolean isIdTypeDataCharacter) throws UnknownException {
         Query<T> query = null;
         PersistenceManager pm = null;
-        try {
-            PersistenceManagerFactory pmf = PMF.getClassPMF().getPMFStatic();
-            pm = pmf.getPersistenceManager();
+        try {            
+            pm = this.getCurrentPm();
             Extent extent = pm.getExtent(clazz, loadSubClase);
             query = pm.newQuery(extent);
             return fieldsEntity(pmf, pm, query, members, maxFetchDepth, idEntity, fieldId, isIdTypeDataCharacter, fields);
@@ -741,22 +630,21 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     @Override
     public T find(String[] members, Integer maxFetchDepth, Object id) throws UnknownException {
         PersistenceManager pm = null;
-        try {
-            PersistenceManagerFactory pmf = PMF.getClassPMF().getPMFStatic();
-            pm = pmf.getPersistenceManager();
+        try {            
+            pm = this.getCurrentPm();
             membersFetchPlan(members, pmf, pm, maxFetchDepth);
             return pm.detachCopy(pm.getObjectById(clazz, id));
-        } catch (Exception ex) {
-            throw throwsException(ex, false);
+        } catch (Exception ex) {            
+            throw throwsException(ex, true);
         } finally {
             closeConnection(pm);
         }
     }
 
     @Override
-    public T find(PersistenceManagerFactory pmf, PersistenceManager pm, String[] members, Integer maxFetchDepth, Object id) throws UnknownException {
+    public T find(PersistenceManager pm, String[] members, Integer maxFetchDepth, Object id) throws UnknownException {
         try {
-            membersFetchPlan(members, pmf, pm, maxFetchDepth);
+            membersFetchPlan(members, pm.getPersistenceManagerFactory(), pm, maxFetchDepth);
             return pm.detachCopy(pm.getObjectById(clazz, id));
         } catch (Exception ex) {
             throw throwsException(ex, false);
@@ -767,9 +655,8 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     public T findIdChar(String[] members, Integer maxFetchDepth, String fieldId, String id) throws UnknownException {
         Query<T> query = null;
         PersistenceManager pm = null;
-        try {
-            PersistenceManagerFactory pmf = PMF.getClassPMF().getPMFStatic();
-            pm = pmf.getPersistenceManager();
+        try {            
+            pm = this.getCurrentPm();
             query = pm.newQuery(clazz);
             return fieldsEntityIdChar(pmf, pm, query, members, maxFetchDepth, id, fieldId);
         } catch (Exception ex) {
@@ -780,11 +667,11 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
     }
 
     @Override
-    public T findIdChar(PersistenceManagerFactory pmf, PersistenceManager pm, String[] members, Integer maxFetchDepth, String fieldId, String id) throws UnknownException {
+    public T findIdChar(PersistenceManager pm, String[] members, Integer maxFetchDepth, String fieldId, String id) throws UnknownException {
         Query<T> query = null;
         try {
             query = pm.newQuery(clazz);
-            return fieldsEntityIdChar(pmf, pm, query, members, maxFetchDepth, id, fieldId);
+            return fieldsEntityIdChar(pm.getPersistenceManagerFactory(), pm, query, members, maxFetchDepth, id, fieldId);
         } catch (Exception ex) {
             throw throwsException(ex, false);
         } finally {
@@ -970,7 +857,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
         }
     }
 
-    private void closeConnection(PersistenceManager pm) throws UnknownException {
+    protected void closeConnection(PersistenceManager pm) throws UnknownException {
         try {
             if (pm != null && !pm.isClosed()) {
                 pm.close();
@@ -980,7 +867,7 @@ public abstract class AbstractJdoDao<T extends Serializable> implements InterCru
         }
     }
 
-    private UnknownException throwsException(Exception ex, boolean trace) {
+    protected UnknownException throwsException(Exception ex, boolean trace) {
         UnknownException ue = new UnknownException(ex.getClass(), ex.getMessage(), ex.getCause(), true, true);
         ue.setStackTrace(ex.getStackTrace());
         ue.traceLog(trace);
