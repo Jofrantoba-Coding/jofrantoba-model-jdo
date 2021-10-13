@@ -591,7 +591,7 @@ public abstract class AbstractGeneralJdoDao<T extends Serializable> implements I
             query = pm.newQuery(extent);
             return fieldsEntity(pmf, pm, query, members, maxFetchDepth, idEntity, fieldId, false, fields);
         } catch (Exception ex) {
-            throw throwsException(ex, false);
+            throw throwsException(ex, true);
         } finally {
             closeQueryConnection(pm, query);
         }

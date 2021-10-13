@@ -170,8 +170,7 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-legacy</artifactId>
-            <version>${version.mongodb-driver}</version> 
-            <scope>test</scope>          
+            <version>${version.mongodb-driver}</version>
         </dependency>        
     </dependencies>
     
