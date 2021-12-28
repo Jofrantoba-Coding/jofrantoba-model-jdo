@@ -25,9 +25,10 @@ public final class PMF {
     public static final Integer DATASTOREREADTIMEOUTMILLIS=1000;
     public static final Integer DATASTOREWRITETIMEOUTMILLIS=1000;
     private static final String SCHEMASTATIC="indiant";
-    //private static final ConnectionPropertiesOracle propsStatic = new ConnectionPropertiesOracle("192.168.1.4", 1521, "orcl", "sysdecorprueba", "sysdecorprueba");
+    //private static final ConnectionPropertiesOracle propsStatic = new ConnectionPropertiesOracle("192.168.1.123", 1521, "pdborcl", "sysproysoc", "sysproysoc");
     //private static final ConnectionPropertiesMemHsqldb propsStatic = new ConnectionPropertiesMemHsqldb("jofrantoba", "SA","");
     //private static final ConnectionPropertiesMongo propsStatic = new ConnectionPropertiesMongo("indiant", "jofrantoba","lvDmek9ERF2qbGww");//atlas mongodb
+    //Connection MongoDB
     private static final ConnectionPropertiesMongo propsStatic = new ConnectionPropertiesMongo("colhum", "mtoral","Maej1019");//atlas mongodb
     private static final PMF pmf = new PMF();    
     private final HashMap<String, PersistenceManagerFactory> mapPMF = new HashMap();

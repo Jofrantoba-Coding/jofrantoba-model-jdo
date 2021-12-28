@@ -19,7 +19,7 @@ import javax.jdo.Transaction;
  * @author jona
  * @param <T>
  */
-public interface InterCrud<T extends Serializable>{        
+public interface InterCrud<T extends Serializable>{            
     Collection<T> allFields(PersistenceManager pm,Long limitInicio,Long limitFin,boolean loadSubClase,String[] members,Integer maxFetchDepth,String filter,Map paramValue,String order)throws UnknownException;
     Collection<T> allFields(Long limitInicio,Long limitFin,boolean loadSubClase,String[] members,Integer maxFetchDepth,String filter,Map paramValue,String order)throws UnknownException;   
     Collection<T> allFields(PersistenceManager pm,boolean loadSubClase,String[] members, Integer maxFetchDepth,String filter,Map paramValue,String order)throws UnknownException;    
@@ -38,6 +38,7 @@ public interface InterCrud<T extends Serializable>{
     T customField(boolean loadSubClase,String[] members, Integer maxFetchDepth,String fields,Long idEntity,String fieldId)throws UnknownException;    
     T customField(PersistenceManager pm,boolean loadSubClase,String[] members, Integer maxFetchDepth,String fields,String idEntity,String fieldId,boolean isIdTypeDataCharacter)throws UnknownException;    
     T customField(boolean loadSubClase,String[] members, Integer maxFetchDepth,String fields,String idEntity,String fieldId,boolean isIdTypeDataCharacter)throws UnknownException;    
+    T find(Object id)throws UnknownException;    
     T find(String[] members, Integer maxFetchDepth,Object id)throws UnknownException;    
     T find(PersistenceManager pm,String[] members, Integer maxFetchDepth,Object id)throws UnknownException;    
     T findIdChar(String[] members, Integer maxFetchDepth,String fieldId,String id)throws UnknownException;    
@@ -55,5 +56,8 @@ public interface InterCrud<T extends Serializable>{
     Long updateBulk(PersistenceManager pm,String fieldsValuesUpdate,String filter,Object[] valuesParam)throws UnknownException;
     void saveOrUpdateList(List<T> entitys) throws UnknownException;
     Integer insertBulk(List<T> entitys) throws UnknownException;
+    void closePm()throws UnknownException;
+    T detach(T entity)throws UnknownException;
+    Object detachObject(Object entity)throws UnknownException;
     /*Map<?,T> allKeyValue(String fieldKey,String... arrayFields)throws UnknownException;*/
 }

@@ -32,6 +32,7 @@ public class ConnectionPropertiesOracle extends AbstractConnectionProperties{
     @Override
     public Properties getProperties() {
         Properties props=new Properties();
+        props.setProperty("javax.jdo.PersistenceManagerFactoryClass", "org.datanucleus.api.jdo.JDOPersistenceManagerFactory");
         props.setProperty("javax.jdo.option.ServerTimeZoneID","America/Lima");                    
         props.setProperty("datanucleus.ConnectionDriverName", super.getDriver());
         props.setProperty("datanucleus.ConnectionURL", super.getUrlConnection());
@@ -50,16 +51,16 @@ public class ConnectionPropertiesOracle extends AbstractConnectionProperties{
         props.setProperty("datanucleus.query.jdoql.allowAll","true");
         props.setProperty("datanucleus.query.sql.allowAll","true");
         /*Apagado por rendimiento*/
-        props.setProperty("datanucleus.metadata.allowXML", "false");         
-        props.setProperty("datanucleus.metadata.supportORM", "false");                 
-        props.setProperty("datanucleus.schema.autoCreateAll", "false");
-        props.setProperty("datanucleus.schema.autoCreateTables", "false");
-        props.setProperty("datanucleus.schema.autoCreateColumns", "false");
-        props.setProperty("datanucleus.schema.autoCreateConstraints", "false");
+        props.setProperty("datanucleus.metadata.allowXML", "true");         
+        props.setProperty("datanucleus.metadata.supportORM", "true");                 
+        props.setProperty("datanucleus.schema.autoCreateAll", "true");
+        props.setProperty("datanucleus.schema.autoCreateTables", "true");
+        props.setProperty("datanucleus.schema.autoCreateColumns", "true");
+        props.setProperty("datanucleus.schema.autoCreateConstraints", "true");
         /*Desactivar en producción*/
-        props.setProperty("datanucleus.schema.validateTables", "false");
-        props.setProperty("datanucleus.schema.validateConstraints", "false");
-        props.setProperty("datanucleus.schema.validateColumns", "false");
+        props.setProperty("datanucleus.schema.validateTables", "true");
+        props.setProperty("datanucleus.schema.validateConstraints", "true");
+        props.setProperty("datanucleus.schema.validateColumns", "true");
         props.setProperty("datanucleus.rdbms.CheckExistTablesOrViews", "true");
         props.setProperty("datanucleus.rdbms.initializeColumnInfo", "ALL");//None
         //props.setProperty("datanucleus.NontransactionalRead","true");

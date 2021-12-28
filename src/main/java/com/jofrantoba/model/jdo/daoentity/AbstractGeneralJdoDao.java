@@ -29,11 +29,29 @@ import lombok.extern.log4j.Log4j2;
 @Data
 public abstract class AbstractGeneralJdoDao<T extends Serializable> implements InterCrud<T> {
     private PersistenceManagerFactory pmf;
+    private PersistenceManager pm;    
     protected Class<T> clazz;
 
-    public PersistenceManager getCurrentPm(){
-        PersistenceManager pm=pmf.getPersistenceManager();
+    public PersistenceManager getCurrentPm(){        
+        if(pm==null || pm.isClosed()){
+            pm=pmf.getPersistenceManager();
+        }
         return pm;
+    }
+    
+    @Override
+    public Object detachObject(Object entity)throws UnknownException{
+        return getCurrentPm().detachCopy(entity);
+    }
+    
+    @Override
+    public T detach(T entity)throws UnknownException{
+        return getCurrentPm().detachCopy(entity);
+    }
+    
+    @Override
+    public void closePm() throws UnknownException{
+        closeConnection(this.pm);
     }
 
     @Override
@@ -44,15 +62,15 @@ public abstract class AbstractGeneralJdoDao<T extends Serializable> implements I
             pm = this.getCurrentPm();
             tx = pm.currentTransaction();
             tx.begin();            
-            pm.makePersistent(entity);            
+            pm.makePersistent(entity);             
         } catch (Exception ex) {
-            rollback(pm, tx);
+            rollback(tx);
             throw throwsException(ex, false);
         } finally {
             try {
-                commit(pm, tx);
+                commit(tx);
             } catch (Exception ex) {
-                rollback(pm, tx);
+                rollback(tx);
                 throw throwsException(ex, false);
             }
         }
@@ -69,13 +87,13 @@ public abstract class AbstractGeneralJdoDao<T extends Serializable> implements I
             tx.begin();
             return pm.makeInsertBulk(entitys);
         } catch (Exception ex) {  
-            rollback(pm, tx);
+            rollback(tx);
             throw throwsException(ex, false);
         } finally {
             try {
-                commit(pm, tx);
+                commit(tx);
             } catch (Exception ex) {
-                rollback(pm, tx);
+                rollback(tx);
                 throw throwsException(ex, false);
             }
         }
@@ -95,13 +113,13 @@ public abstract class AbstractGeneralJdoDao<T extends Serializable> implements I
             tx.setRetainValues(false);            
             pm.makePersistentAll(entitys);            
         } catch (Exception ex) {
-            rollback(pm, tx);
+            rollback(tx);
             throw throwsException(ex, false);
         } finally {
             try {
-                commit(pm, tx);
+                commit(tx);
             } catch (Exception ex) {
-                rollback(pm, tx);
+                rollback(tx);
                 throw throwsException(ex, false);
             }
         }
@@ -122,13 +140,13 @@ public abstract class AbstractGeneralJdoDao<T extends Serializable> implements I
             tx.begin();
             return pm.makePersistent(entity);
         } catch (Exception ex) {
-            rollback(pm, tx);
+            rollback(tx);
             throw throwsException(ex, false);
         } finally {
             try {
-                commit(pm, tx);
+                commit(tx);
             } catch (Exception ex) {
-                rollback(pm, tx);
+                rollback(tx);
                 throw throwsException(ex, false);
             }
         }
@@ -187,13 +205,13 @@ public abstract class AbstractGeneralJdoDao<T extends Serializable> implements I
             }            
             return (Long) query.execute();
         } catch (Exception ex) {
-            rollback(pm, tx, query);
+            rollback(tx, query);
             throw throwsException(ex, false);
         } finally {
             try {
-                commit(pm, tx, query);
+                commit(tx, query);
             } catch (Exception ex) {
-                rollback(pm, tx, query);
+                rollback(tx, query);
                 throw throwsException(ex, false);
             }
         }
@@ -243,13 +261,13 @@ public abstract class AbstractGeneralJdoDao<T extends Serializable> implements I
             query = pm.newQuery(strJdoql.toString());
             return (Long) query.execute();
         } catch (Exception ex) {
-            rollback(pm, tx, query);
+            rollback(tx, query);
             throw throwsException(ex, false);
         } finally {
             try {
-                commit(pm, tx, query);
+                commit(tx, query);
             } catch (Exception ex) {
-                rollback(pm, tx, query);
+                rollback(tx, query);
                 throw throwsException(ex, false);
             }
         }
@@ -299,13 +317,13 @@ public abstract class AbstractGeneralJdoDao<T extends Serializable> implements I
             }            
             return (Long) query.execute();            
         } catch (Exception ex) {
-            rollback(pm, tx, query);
+            rollback(tx, query);
             throw throwsException(ex, false);
         } finally {
             try {
-                commit(pm, tx, query);
+                commit(tx, query);
             } catch (Exception ex) {
-                rollback(pm, tx, query);
+                rollback(tx, query);
                 throw throwsException(ex, false);
             }
         }
@@ -363,7 +381,7 @@ public abstract class AbstractGeneralJdoDao<T extends Serializable> implements I
         } catch (Exception ex) {
             throw throwsException(ex, false);
         } finally {
-            closeQueryConnection(pm, query);
+            closeQuery(query);
         }
     }
 
@@ -397,7 +415,7 @@ public abstract class AbstractGeneralJdoDao<T extends Serializable> implements I
         } catch (Exception ex) {
             throw throwsException(ex, true);
         } finally {
-            closeQueryConnection(pm, query);
+            closeQuery(query);
         }
     }
     
@@ -411,7 +429,7 @@ public abstract class AbstractGeneralJdoDao<T extends Serializable> implements I
         } catch (Exception ex) {
             throw throwsException(ex, false);
         } finally {
-            closeQueryConnection(pm, query);
+            closeQuery(query);
         }
     }
     
@@ -427,7 +445,7 @@ public abstract class AbstractGeneralJdoDao<T extends Serializable> implements I
         } catch (Exception ex) {
             throw throwsException(ex, true);
         } finally {
-            closeQueryConnection(pm, query);
+            closeQuery(query);
         }
     }
 
@@ -447,7 +465,7 @@ public abstract class AbstractGeneralJdoDao<T extends Serializable> implements I
         } catch (Exception ex) {
             throw throwsException(ex, false);
         } finally {
-            closeQueryConnection(pm, query);
+            closeQuery(query);
         }
     }
 
@@ -467,7 +485,7 @@ public abstract class AbstractGeneralJdoDao<T extends Serializable> implements I
         } catch (Exception ex) {
             throw throwsException(ex, false);
         } finally {
-            closeQueryConnection(pm, query);
+            closeQuery(query);
         }
     }
 
@@ -533,7 +551,7 @@ public abstract class AbstractGeneralJdoDao<T extends Serializable> implements I
         } catch (Exception ex) {
             throw throwsException(ex, false);
         } finally {
-            closeQueryConnection(pm, query);
+            closeQuery(query);
         }
     }
 
@@ -563,7 +581,7 @@ public abstract class AbstractGeneralJdoDao<T extends Serializable> implements I
         } catch (Exception ex) {
             throw throwsException(ex, true);
         } finally {
-            closeQueryConnection(pm, query);
+            closeQuery(query);
         }
     }
 
@@ -593,7 +611,7 @@ public abstract class AbstractGeneralJdoDao<T extends Serializable> implements I
         } catch (Exception ex) {
             throw throwsException(ex, true);
         } finally {
-            closeQueryConnection(pm, query);
+            closeQuery(query);
         }
     }
 
@@ -623,7 +641,18 @@ public abstract class AbstractGeneralJdoDao<T extends Serializable> implements I
         } catch (Exception ex) {
             throw throwsException(ex, false);
         } finally {
-            closeQueryConnection(pm, query);
+            closeQuery(query);
+        }
+    }
+    
+    @Override
+    public T find(Object id) throws UnknownException {
+        PersistenceManager pm = null;
+        try {            
+            pm = this.getCurrentPm();            
+            return pm.getObjectById(clazz, id);
+        } catch (Exception ex) {            
+            throw throwsException(ex, true);
         }
     }
 
@@ -636,8 +665,6 @@ public abstract class AbstractGeneralJdoDao<T extends Serializable> implements I
             return pm.detachCopy(pm.getObjectById(clazz, id));
         } catch (Exception ex) {            
             throw throwsException(ex, true);
-        } finally {
-            closeConnection(pm);
         }
     }
 
@@ -662,7 +689,7 @@ public abstract class AbstractGeneralJdoDao<T extends Serializable> implements I
         } catch (Exception ex) {
             throw throwsException(ex, false);
         } finally {
-            closeQueryConnection(pm, query);
+            closeQuery(query);
         }
     }
 
@@ -856,7 +883,7 @@ public abstract class AbstractGeneralJdoDao<T extends Serializable> implements I
             throw throwsException(ex, false);
         }
     }
-
+        
     protected void closeConnection(PersistenceManager pm) throws UnknownException {
         try {
             if (pm != null && !pm.isClosed()) {

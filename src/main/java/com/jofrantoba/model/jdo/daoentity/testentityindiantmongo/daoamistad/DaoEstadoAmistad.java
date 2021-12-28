@@ -7,6 +7,7 @@ package com.jofrantoba.model.jdo.daoentity.testentityindiantmongo.daoamistad;
 
 import com.jofrantoba.model.jdo.daoentity.AbstractMongoJdoDao;
 import com.jofrantoba.model.jdo.pmf.PMF;
+import com.jofrantoba.model.jdo.shared.UnknownException;
 
 /**
  *

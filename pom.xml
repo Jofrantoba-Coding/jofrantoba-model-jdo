@@ -36,6 +36,7 @@
         <version.mockito-all>2.0.2-beta</version.mockito-all>
         <version.hsqldb>2.5.1</version.hsqldb>
         <version.mongodb-driver>4.3.1</version.mongodb-driver>
+        <version.ojdbc6>11.2.0.4</version.ojdbc6>        
     </properties>
     <dependencies>                                        
         <dependency>
@@ -171,7 +172,12 @@
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-legacy</artifactId>
             <version>${version.mongodb-driver}</version>
-        </dependency>        
+        </dependency> 
+        <dependency>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ojdbc6</artifactId>
+            <version>${version.ojdbc6}</version>
+        </dependency>       
     </dependencies>
     
     <build>
